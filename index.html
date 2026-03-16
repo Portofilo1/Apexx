@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>APEXX</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--s1:#131313;--s2:#1a1a1a;--bd:#252525;--tx:#e5e5e5;--dim:#505050;--red:#c8001a;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--tx);font-family:'IBM Plex Mono',monospace;max-width:430px;margin:0 auto;display:flex;flex-direction:column;font-size:11px;}
+.hd{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid var(--bd);flex-shrink:0;}
+.logo{font-family:'Bebas Neue';font-size:17px;letter-spacing:3px;}
+.logo b{color:var(--red);}
+.bhd{text-align:right;}
+.bhd .a{font-family:'Bebas Neue';font-size:15px;display:block;}
+.bhd .c{font-size:8px;color:var(--dim);letter-spacing:1px;}
+.sc{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.sc.on{display:flex;}
+.pg{flex:1;overflow-y:auto;padding:9px 11px;display:flex;flex-direction:column;gap:7px;}
+.pg::-webkit-scrollbar{width:2px;}
+.pg::-webkit-scrollbar-thumb{background:#222;}
+.lbl{font-size:8px;letter-spacing:2px;color:var(--dim);border-bottom:1px solid var(--bd);padding-bottom:3px;}
+.row{display:flex;align-items:center;gap:5px;}
+.rl{font-size:8px;color:var(--dim);letter-spacing:1px;white-space:nowrap;flex-shrink:0;}
+.inp{flex:1;background:var(--s2);border:1px solid var(--bd);color:var(--tx);font-family:'IBM Plex Mono';font-size:12px;padding:6px 9px;outline:none;min-width:0;width:100%;}
+.inp:focus{border-color:var(--red);}
+.presets{display:flex;gap:4px;}
+.pre{flex:1;padding:5px 0;background:var(--s2);border:1px solid var(--bd);color:var(--dim);font-family:'IBM Plex Mono';font-size:9px;cursor:pointer;text-align:center;}
+.pre:active{border-color:var(--red);color:var(--tx);}
+.btn{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:1px;padding:8px 13px;border:none;cursor:pointer;font-weight:600;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
+.br{background:var(--red);color:#fff;}
+.br:active{opacity:.85;}
+.bg{background:var(--s2);color:var(--tx);border:1px solid var(--bd);}
+.bg:active{opacity:.8;}
+.full{width:100%;text-align:center;}
+.ic2{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.ic{background:var(--s1);border:1px solid var(--bd);padding:7px 9px;}
+.ic .il{font-size:7px;color:var(--dim);letter-spacing:1px;}
+.ic .iv{font-family:'Bebas Neue';font-size:19px;line-height:1.1;}
+.ic .iv.r{color:var(--red);}
+.cbox{background:var(--s1);border:1px solid var(--bd);height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.cbox .prog{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .08s;}
+.cx{font-family:'Bebas Neue';font-size:54px;line-height:1;transition:color .15s;}
+.cx.hot{color:var(--red);}
+.cst{font-size:8px;color:var(--dim);letter-spacing:2px;margin-top:1px;}
+.hist{display:flex;flex-direction:column;gap:3px;}
+.hr{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--s1);border-left:2px solid transparent;font-size:9px;}
+.hr.w{border-left-color:var(--red);}
+.hr.l{color:var(--dim);}
+.hm{font-family:'Bebas Neue';font-size:13px;}
+.hr.w .hm{color:var(--red);}
+.mg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;}
+.mc{aspect-ratio:1;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;}
+.mc:active:not(.rv){background:#1e1e1e;}
+.mc.rv{cursor:default;}
+.mc.sf{border-color:var(--red);}
+.mc.bm{background:#160000;border-color:var(--red);}
+.mc.hid{font-size:0;}
+.tg{display:flex;flex-direction:column;gap:3px;}
+.trow{display:flex;align-items:center;gap:3px;}
+.trl{font-size:7px;color:var(--dim);width:14px;text-align:right;flex-shrink:0;}
+.trm{font-size:7px;color:var(--dim);width:28px;text-align:right;flex-shrink:0;}
+.trm.cur{color:var(--red);}
+.tc{flex:1;height:32px;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.tc.ar:active{border-color:var(--red);}
+.tc.ok{background:#160008;border-color:var(--red);}
+.tc.no{opacity:.3;}
+.tc.na{cursor:default;}
+.balgame{background:var(--s1);border:1px solid var(--bd);padding:10px;}
+.scalewrap{display:flex;align-items:flex-end;justify-content:center;gap:10px;height:70px;margin:8px 0;}
+.side{background:var(--s2);border:1px solid var(--bd);width:65px;display:flex;align-items:flex-end;justify-content:center;padding:5px;transition:height .3s;}
+.sval{font-family:'Bebas Neue';font-size:17px;}
+.sdiv{width:1px;background:var(--bd);height:100%;}
+.bq{font-size:8px;color:var(--dim);letter-spacing:1px;}
+.bqt{font-size:12px;color:var(--tx);font-weight:600;margin-top:2px;display:block;}
+.bst{font-size:8px;color:var(--dim);letter-spacing:1px;text-align:center;margin:4px 0;}
+.bst span{color:var(--red);}
+.bch{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:6px;}
+.bc{padding:10px;background:var(--s2);border:1px solid var(--bd);cursor:pointer;text-align:center;font-family:'Bebas Neue';font-size:22px;}
+.bc:active{border-color:var(--red);}
+.bc.ok{border-color:var(--red);background:#160008;}
+.bc.no{opacity:.3;}
+.slbl{font-size:7px;letter-spacing:2px;color:var(--dim);padding:5px 0 2px;}
+.card{background:var(--s1);border:1px solid var(--bd);}
+.sr{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border-bottom:1px solid #181818;}
+.sr:last-child{border-bottom:none;}
+.sn{font-size:11px;color:var(--tx);}
+.ss{font-size:8px;color:var(--dim);}
+.sv{font-family:'Bebas Neue';font-size:17px;color:var(--red);}
+.stats4{display:grid;grid-template-columns:1fr 1fr;}
+.stc{padding:8px 11px;border-bottom:1px solid #181818;border-right:1px solid #181818;}
+.stc:nth-child(2n){border-right:none;}
+.stc:nth-last-child(-n+2){border-bottom:none;}
+.stl{font-size:7px;color:var(--dim);letter-spacing:1px;}
+.stv{font-family:'Bebas Neue';font-size:17px;}
+.stv.r{color:var(--red);}
+.tog{width:32px;height:17px;background:#222;border:1px solid #333;position:relative;cursor:pointer;flex-shrink:0;}
+.tog.on{background:#6a0010;border-color:var(--red);}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:11px;height:11px;background:var(--tx);transition:transform .15s;}
+.tog.on::after{transform:translateX(15px);}
+.langs{display:flex;}
+.lb{padding:4px 9px;font-family:'IBM Plex Mono';font-size:9px;background:var(--s2);border:1px solid var(--bd);color:var(--dim);cursor:pointer;margin-left:-1px;position:relative;}
+.lb.on{background:var(--red);color:#fff;border-color:var(--red);z-index:1;}
+/* LEADERBOARD */
+.lboard{display:flex;flex-direction:column;gap:3px;}
+.lrow{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--s1);border:1px solid var(--bd);}
+.lrow.me{border-color:var(--red);}
+.lrank{font-family:'Bebas Neue';font-size:16px;width:20px;color:var(--dim);flex-shrink:0;}
+.lrank.top{color:var(--red);}
+.lname{flex:1;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lbal{font-family:'Bebas Neue';font-size:14px;color:var(--red);}
+/* NAV */
+.nav{display:flex;border-top:1px solid var(--bd);background:var(--bg);flex-shrink:0;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 2px 7px;cursor:pointer;gap:2px;border-right:1px solid #181818;position:relative;}
+.ni:last-child{border-right:none;}
+.ni.on{background:#0e0e0e;}
+.ni.on::after{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--red);}
+.nico{font-size:14px;line-height:1;}
+.nlbl{font-size:7px;letter-spacing:1px;color:var(--dim);text-transform:uppercase;}
+.ni.on .nlbl{color:var(--tx);}
+/* NOTIF */
+.notif{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-110%);background:var(--s2);border:1px solid var(--bd);border-top:2px solid var(--red);padding:7px 14px;text-align:center;transition:transform .2s;z-index:99;pointer-events:none;}
+.notif.on{transform:translateX(-50%) translateY(0);}
+.nt{font-size:7px;color:var(--red);letter-spacing:2px;margin-bottom:1px;}
+.nb{font-size:11px;}
+/* RESULT */
+.res{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:16px;z-index:50;}
+.res.on{display:flex;}
+.rb{background:var(--s1);border:1px solid var(--bd);border-top:2px solid var(--red);padding:20px 26px;text-align:center;max-width:250px;width:100%;}
+.rlbl{font-size:7px;color:var(--dim);letter-spacing:3px;}
+.rt{font-family:'Bebas Neue';font-size:24px;margin:4px 0 2px;}
+.rs{font-size:9px;color:var(--dim);}
+.ra{font-family:'Bebas Neue';font-size:36px;display:block;margin-top:3px;}
+/* LOADER */
+.loader{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:200;}
+.loader.hide{display:none;}
+.ldot{width:6px;height:6px;background:var(--red);display:inline-block;animation:ldot 1s infinite;}
+.ldot:nth-child(2){animation-delay:.2s;}
+.ldot:nth-child(3){animation-delay:.4s;}
+@keyframes ldot{0%,100%{opacity:.2}50%{opacity:1}}
+.lload{display:flex;gap:5px;}
+.llogo{font-family:'Bebas Neue';font-size:28px;letter-spacing:4px;}
+.llogo b{color:var(--red);}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="llogo">APEX<b>X</b></div>
+  <div class="lload"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+</div>
+
+<!-- HEADER -->
+<div class="hd">
+  <div class="logo">APEX<b>X</b></div>
+  <div class="bhd"><span class="a" id="baldisp">—</span><span class="c">RUB</span></div>
+</div>
+
+<!-- NOTIF -->
+<div class="notif" id="notif"><div class="nt" id="ntt"></div><div class="nb" id="ntb"></div></div>
+
+<!-- RESULT -->
+<div class="res" id="res">
+  <div class="rb">
+    <div class="rlbl" id="rlbl">РЕЗУЛЬТАТ</div>
+    <div class="rt" id="rtit">—</div>
+    <div class="rs" id="rsub">—</div>
+    <span class="ra" id="ramt">—</span>
+  </div>
+  <button class="btn bg" onclick="closeRes()">ПРОДОЛЖИТЬ</button>
+</div>
+
+<!-- CRASH -->
+<div class="sc on" id="sc-crash">
+  <div class="pg">
+    <div class="lbl">КРАШ</div>
+    <div class="cbox" id="cbox">
+      <div class="prog" id="cprog"></div>
+      <div class="cx" id="cx">1.00×</div>
+      <div class="cst" id="cst">ОЖИДАНИЕ СТАВКИ</div>
+    </div>
+    <div>
+      <div class="row" style="margin-bottom:4px">
+        <span class="rl">СТАВКА</span>
+        <input class="inp" type="number" id="cbet" value="100" min="10">
+        <span class="rl">RUB</span>
+      </div>
+      <div class="presets">
+        <div class="pre" onclick="sb('cbet',50)">50</div>
+        <div class="pre" onclick="sb('cbet',100)">100</div>
+        <div class="pre" onclick="sb('cbet',250)">250</div>
+        <div class="pre" onclick="sb('cbet',500)">500</div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="rl">АВТОВЫВОД</span>
+      <input class="inp" type="number" id="cauto" placeholder="2.00" step="0.1" min="1.1">
+      <span class="rl">×</span>
+    </div>
+    <button class="btn br full" id="cbtn" onclick="crashAct()">СДЕЛАТЬ СТАВКУ</button>
+    <div class="lbl">ПОСЛЕДНИЕ РАУНДЫ</div>
+    <div class="hist" id="chist"></div>
+  </div>
+</div>
+
+<!-- MINES -->
+<div class="sc" id="sc-mines">
+  <div class="pg">
+    <div class="lbl">МИНЫ</div>
+    <div class="ic2">
+      <div class="ic"><div class="il">СТАВКА</div><div class="iv" id="mbd">—</div></div>
+      <div class="ic"><div class="il">МНОЖИТЕЛЬ</div><div class="iv r" id="mmd">1.00×</div></div>
+    </div>
+    <div class="mg" id="mgrid"></div>
+    <div class="row"><span class="rl">СТАВКА</span><input class="inp" type="number" id="mbet" value="100" min="10"></div>
+    <div class="row">
+      <span class="rl">МИНЫ</span>
+      <input class="inp" type="number" id="mcnt" value="5" min="1" max="24">
+      <span class="rl">ШТ</span>
+    </div>
+    <div class="row">
+      <button class="btn br full" id="msbtn" onclick="minesAct()">НАЧАТЬ ИГРУ</button>
+      <button class="btn bg" id="mcbtn" onclick="minesCash()" style="display:none">ВЫВЕСТИ</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOWER -->
+<div class="sc" id="sc-tower">
+  <div class="pg">
+    <div class="lbl">БАШНЯ</div>
+    <div class="ic2">
+      <div class="ic"><div class="il">УРОВЕНЬ</div><div class="iv" id="tlvl">0</div></div>
+      <div class="ic"><div class="il">ВЫИГРЫШ</div><div class="iv r" id="twin">0</div></div>
+    </div>
+    <div class="tg" id="tgrid"></div>
+    <div class="row"><span class="rl">СТАВКА</span><input class="inp" type="number" id="tbet" value="100" min="10"></div>
+    <div class="row">
+      <button class="btn br full" id="tsbtn" onclick="towerAct()">НАЧАТЬ ИГРУ</button>
+      <button class="btn bg" id="tcbtn" onclick="towerCash()" style="display:none">ВЫВЕСТИ</button>
+    </div>
+  </div>
+</div>
+
+<!-- BALANCE GAME -->
+<div class="sc" id="sc-balance">
+  <div class="pg">
+    <div class="lbl">БАЛАНС</div>
+    <div class="balgame">
+      <div class="bq"><span>ВЫБЕРИТЕ БОЛЬШЕЕ ЧИСЛО</span><span class="bqt" id="bqt">Раунд 1</span></div>
+      <div class="scalewrap">
+        <div class="side" id="ssl" style="height:50%"><div class="sval" id="slv">?</div></div>
+        <div class="sdiv"></div>
+        <div class="side" id="ssr" style="height:50%"><div class="sval" id="srv">?</div></div>
+      </div>
+      <div class="bst">СЕРИЯ: <span id="bstr">0</span></div>
+      <div class="bch">
+        <div class="bc" id="bcl" onclick="bCh('left')">?</div>
+        <div class="bc" id="bcr" onclick="bCh('right')">?</div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="rl">СТАВКА</span>
+      <input class="inp" type="number" id="bbet" value="50" min="10">
+      <button class="btn bg" onclick="newBR()">НОВАЯ</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="sc" id="sc-settings">
+  <div class="pg">
+    <div class="slbl">СТАТИСТИКА СЕГОДНЯ</div>
+    <div class="card">
+      <div class="stats4">
+        <div class="stc"><div class="stl">ВЫИГРАНО</div><div class="stv r" id="swon">0</div></div>
+        <div class="stc"><div class="stl">ПРОИГРАНО</div><div class="stv" id="slost">0</div></div>
+        <div class="stc"><div class="stl">СТАВОК</div><div class="stv" id="sbets">0</div></div>
+        <div class="stc"><div class="stl">ЧИСТАЯ</div><div class="stv r" id="snet">0</div></div>
+      </div>
+    </div>
+    <div class="slbl">МОЙ БАЛАНС</div>
+    <div class="card">
+      <div class="sr"><div><div class="sn">Текущий баланс</div><div class="ss">Доступно для игры</div></div><div class="sv" id="sbal">—</div></div>
+      <div class="sr"><div><div class="sn">Всего ставок</div></div><div class="sv" id="sbetsall">0</div></div>
+    </div>
+    <div class="slbl">ЯЗЫК</div>
+    <div class="card">
+      <div class="sr">
+        <div class="sn">Язык интерфейса</div>
+        <div class="langs">
+          <div class="lb on" onclick="setLang('ru',this)">RU</div>
+          <div class="lb" onclick="setLang('en',this)">EN</div>
+          <div class="lb" onclick="setLang('uk',this)">UK</div>
+        </div>
+      </div>
+    </div>
+    <div class="slbl">ПАРАМЕТРЫ</div>
+    <div class="card">
+      <div class="sr"><div class="sn">Звуковые эффекты</div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="sr"><div class="sn">Вибрация</div><div class="tog" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="slbl">ТАБЛИЦА ЛИДЕРОВ</div>
+    <div class="lboard" id="lboard"><div style="color:var(--dim);font-size:10px;padding:8px">Загрузка...</div></div>
+    <div class="slbl" style="text-align:center;padding-top:6px;">v1.0.0</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="ni on" onclick="sw('crash',this)"><div class="nico">🚀</div><div class="nlbl">Краш</div></div>
+  <div class="ni" onclick="sw('mines',this)"><div class="nico">💣</div><div class="nlbl">Мины</div></div>
+  <div class="ni" onclick="sw('tower',this)"><div class="nico">🏛</div><div class="nlbl">Башня</div></div>
+  <div class="ni" onclick="sw('balance',this)"><div class="nico">⚖️</div><div class="nlbl">Баланс</div></div>
+  <div class="ni" onclick="sw('settings',this)"><div class="nico">⚙️</div><div class="nlbl">Настройки</div></div>
+</div>
+
+<script>
+// ─── TELEGRAM INIT ───────────────────────────────────────────
+const tg = window.Telegram?.WebApp;
+if(tg){ tg.ready(); tg.expand(); }
+const INIT_DATA = tg?.initData || "";
+const API = "https://ЗАМЕНИ_НА_RAILWAY_URL"; // пример: https://apexx-production.railway.app // пусто = относительные пути (бэкенд сам отдаёт html)
+
+// ─── STATE ───────────────────────────────────────────────────
+let bal = 0, rnd = 100, myTgId = tg?.initDataUnsafe?.user?.id || 0;
+let lang = localStorage.getItem('lang') || 'ru';
+
+// ─── LANG ────────────────────────────────────────────────────
+const L = {
+  ru:{win:'Наши поздравления',lose:'Не повезло',youWon:'Вы выиграли:',lost2:'Потеряно:',cont:'ПРОДОЛЖИТЬ',
+      err:'Недостаточно средств.',errD:'Проверьте данные.',open1:'Откройте хотя бы одну клетку.',pass1:'Пройдите хотя бы один уровень.',rnd:'Раунд'},
+  en:{win:'Congratulations',lose:'Bad luck',youWon:'You won:',lost2:'Lost:',cont:'CONTINUE',
+      err:'Insufficient funds.',errD:'Check data.',open1:'Open at least one tile.',pass1:'Pass at least one level.',rnd:'Round'},
+  uk:{win:'Наші вітання',lose:'Не пощастило',youWon:'Ви виграли:',lost2:'Втрачено:',cont:'ПРОДОВЖИТИ',
+      err:'Недостатньо коштів.',errD:'Перевірте дані.',open1:'Відкрийте хоча б одну клітинку.',pass1:'Пройдіть хоча б один рівень.',rnd:'Раунд'}
+};
+function t(k){ return L[lang][k]||k; }
+function setLang(l,el){ lang=l; localStorage.setItem('lang',l); document.querySelectorAll('.lb').forEach(b=>b.classList.remove('on')); el.classList.add('on'); }
+
+// ─── API ─────────────────────────────────────────────────────
+async function apiPost(path, body){
+  try{
+    const r = await fetch(API+path, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({...body, init_data: INIT_DATA})
+    });
+    return await r.json();
+  } catch(e){ return null; }
+}
+
+async function loadUser(){
+  const data = await apiPost('/api/user', {});
+  if(data){
+    bal = data.balance;
+    updBalDisp();
+    // daily stats
+    const d = data.daily || {};
+    document.getElementById('swon').textContent = (d.won||0).toFixed(0);
+    document.getElementById('slost').textContent = (d.lost||0).toFixed(0);
+    document.getElementById('sbets').textContent = d.bets||0;
+    const net = (d.won||0)-(d.lost||0);
+    const nel = document.getElementById('snet');
+    nel.textContent = (net>=0?'+':'')+net.toFixed(0);
+    nel.className = 'stv'+(net>=0?' r':'');
+    document.getElementById('sbal').textContent = bal.toLocaleString('ru-RU');
+    document.getElementById('sbetsall').textContent = data.bets_count||0;
+  }
+  document.getElementById('loader').classList.add('hide');
+}
+
+async function sendBet(game, bet, result, winAmount, multiplier){
+  const data = await apiPost('/api/bet', {game, bet, result, win_amount: winAmount, multiplier});
+  if(data){
+    bal = data.balance;
+    updBalDisp();
+    const d = data.daily || {};
+    document.getElementById('swon').textContent = (d.won||0).toFixed(0);
+    document.getElementById('slost').textContent = (d.lost||0).toFixed(0);
+    document.getElementById('sbets').textContent = d.bets||0;
+    const net = (d.won||0)-(d.lost||0);
+    const nel = document.getElementById('snet');
+    nel.textContent = (net>=0?'+':'')+net.toFixed(0);
+    nel.className = 'stv'+(net>=0?' r':'');
+    document.getElementById('sbal').textContent = bal.toLocaleString('ru-RU');
+  }
+}
+
+async function loadLeaderboard(){
+  try{
+    const data = await fetch(API+'/api/leaderboard').then(r=>r.json());
+    const lb = document.getElementById('lboard');
+    lb.innerHTML = '';
+    data.forEach((u,i)=>{
+      const name = u.first_name || u.username || 'Аноним';
+      const isMe = false;
+      const row = document.createElement('div');
+      row.className = 'lrow'+(isMe?' me':'');
+      row.innerHTML = `<div class="lrank ${i<3?'top':''}">${i+1}</div><div class="lname">${name}</div><div class="lbal">${u.balance.toLocaleString('ru-RU')}</div>`;
+      lb.appendChild(row);
+    });
+  } catch(e){}
+}
+
+// ─── UTILS ───────────────────────────────────────────────────
+function updBalDisp(){
+  document.getElementById('baldisp').textContent = bal.toLocaleString('ru-RU',{minimumFractionDigits:2});
+}
+function sb(id,v){ document.getElementById(id).value=v; }
+
+function notify(ti,b){
+  const n=document.getElementById('notif');
+  document.getElementById('ntt').textContent=ti;
+  document.getElementById('ntb').textContent=b;
+  n.classList.add('on');
+  clearTimeout(n._t);
+  n._t=setTimeout(()=>n.classList.remove('on'),2400);
+}
+
+function showRes(type,amt){
+  document.getElementById('rlbl').textContent = type==='win'?'ПОБЕДА':'ПОРАЖЕНИЕ';
+  document.getElementById('rtit').textContent = type==='win'?t('win'):t('lose');
+  document.getElementById('rsub').textContent = type==='win'?t('youWon'):t('lost2');
+  const ra=document.getElementById('ramt');
+  ra.textContent=(type==='win'?'+':'-')+Math.abs(amt).toFixed(2);
+  ra.style.color=type==='win'?'var(--red)':'#444';
+  document.getElementById('res').classList.add('on');
+}
+function closeRes(){ document.getElementById('res').classList.remove('on'); }
+
+function sw(tab,el){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById('sc-'+tab).classList.add('on');
+  el.classList.add('on');
+  if(tab==='settings') loadLeaderboard();
+}
+
+// ─── CRASH ───────────────────────────────────────────────────
+let cRun=false,cIv=null,cMult=1,cBet=false,cAmt=0,cTarget=0;
+
+function genTarget(hasBet){
+  const r=Math.random();
+  if(!hasBet) return 1.0+Math.random()*0.7;
+  if(r<0.35) return 1.05+Math.random()*0.55;
+  if(r<0.65) return 1.6+Math.random()*1.8;
+  return 3.5+Math.random()*8;
+}
+
+function startCrashRound(){
+  cRun=true; cMult=1.0; cTarget=genTarget(cBet);
+  document.getElementById('cbox').classList.add('run');
+  clearInterval(cIv);
+  cIv=setInterval(crashTick,80);
+}
+
+function crashTick(){
+  cMult+=0.01+cMult*0.003;
+  document.getElementById('cx').textContent=cMult.toFixed(2)+'×';
+  const pct=Math.min((cMult-1)/9*100,100);
+  document.getElementById('cprog').style.transform='scaleX('+pct/100+')';
+  if(cMult>=3) document.getElementById('cx').classList.add('hot');
+  const auto=parseFloat(document.getElementById('cauto').value);
+  if(cBet&&auto&&cMult>=auto){ crashCash(); return; }
+  if(cMult>=cTarget) crashEnd();
+}
+
+function crashAct(){
+  if(!cBet){
+    const b=parseFloat(document.getElementById('cbet').value);
+    if(!b||b>bal){ notify('',t('err')); return; }
+    bal-=b; cAmt=b; cBet=true; updBalDisp();
+    document.getElementById('cbtn').textContent='ВЫВЕСТИ';
+    document.getElementById('cst').textContent='СТАВКА ПРИНЯТА';
+    if(!cRun) startCrashRound();
+  } else { crashCash(); }
+}
+
+function crashCash(){
+  if(!cBet) return;
+  const win=cAmt*cMult;
+  addCH(cMult,cAmt,true); cBet=false;
+  document.getElementById('cbtn').textContent='СДЕЛАТЬ СТАВКУ';
+  document.getElementById('cst').textContent='ВЫВЕДЕНО '+cMult.toFixed(2)+'×';
+  sendBet('crash',cAmt,'win',win,cMult);
+  setTimeout(()=>showRes('win',win-cAmt),100);
+}
+
+function crashEnd(){
+  clearInterval(cIv); cRun=false;
+  document.getElementById('cbox').classList.remove('run');
+  document.getElementById('cx').textContent='CRASH';
+  document.getElementById('cx').classList.add('hot');
+  document.getElementById('cprog').style.transform='scaleX(0)';
+  document.getElementById('cst').textContent='КРАШНУЛОСЬ НА '+cMult.toFixed(2)+'×';
+  document.getElementById('cbtn').textContent='СДЕЛАТЬ СТАВКУ';
+  if(cBet){
+    cBet=false; addCH(cMult,cAmt,false);
+    sendBet('crash',cAmt,'loss',0,cMult);
+    setTimeout(()=>showRes('loss',cAmt),100);
+  }
+  setTimeout(()=>{
+    document.getElementById('cx').textContent='1.00×';
+    document.getElementById('cx').classList.remove('hot');
+    document.getElementById('cst').textContent='ОЖИДАНИЕ СТАВКИ';
+    startCrashRound();
+  },2500);
+}
+
+function addCH(m,b,w){
+  const h=document.getElementById('chist'),r=document.createElement('div');
+  r.className='hr '+(w?'w':'l');
+  r.innerHTML=`<span>Раунд #${rnd++}</span><span class="hm">${m.toFixed(2)}×</span><span>${w?'+'+(b*(m-1)).toFixed(0):'-'+b.toFixed(0)}</span>`;
+  h.insertBefore(r,h.firstChild);
+  if(h.children.length>7) h.lastChild.remove();
+}
+
+// ─── MINES ───────────────────────────────────────────────────
+let mAct=false,mCells=[],mRev=0,mMult=1,mBetAmt=0;
+
+function initMG(){
+  const g=document.getElementById('mgrid'); g.innerHTML=''; mCells=[];
+  for(let i=0;i<25;i++){
+    const c=document.createElement('div');
+    c.className='mc hid'; c.onclick=()=>mRvl(i);
+    g.appendChild(c); mCells.push({el:c,rv:false,b:false});
+  }
+}
+function minesAct(){
+  if(mAct) return;
+  const b=parseFloat(document.getElementById('mbet').value);
+  const cnt=parseInt(document.getElementById('mcnt').value);
+  if(!b||b>bal||cnt<1||cnt>24){ notify('',t('errD')); return; }
+  bal-=b; mBetAmt=b; updBalDisp(); mAct=true; mRev=0; mMult=1;
+  document.getElementById('mmd').textContent='1.00×';
+  document.getElementById('mbd').textContent=b;
+  const bombs=new Set();
+  while(bombs.size<cnt) bombs.add(Math.floor(Math.random()*25));
+  mCells.forEach((c,i)=>{ c.rv=false; c.b=bombs.has(i); c.el.className='mc hid'; c.el.textContent=''; });
+  document.getElementById('msbtn').style.display='none';
+  document.getElementById('mcbtn').style.display='inline-flex';
+}
+function mRvl(i){
+  if(!mAct) return;
+  const c=mCells[i]; if(c.rv) return;
+  c.rv=true; c.el.classList.remove('hid'); c.el.classList.add('rv');
+  if(c.b){
+    c.el.classList.add('bm'); c.el.textContent='💣';
+    mCells.forEach(x=>{ if(x.b){x.el.classList.add('rv','bm');x.el.textContent='💣';} });
+    mAct=false;
+    document.getElementById('msbtn').style.display='block';
+    document.getElementById('mcbtn').style.display='none';
+    sendBet('mines',mBetAmt,'loss',0,0);
+    setTimeout(()=>showRes('loss',mBetAmt),150);
+  } else {
+    c.el.classList.add('sf'); c.el.textContent='💎'; mRev++;
+    const cnt=parseInt(document.getElementById('mcnt').value);
+    mMult=1+mRev*(cnt/5)*0.28;
+    document.getElementById('mmd').textContent=mMult.toFixed(2)+'×';
+  }
+}
+function minesCash(){
+  if(!mAct||mRev===0){ notify('',t('open1')); return; }
+  mAct=false;
+  const win=mBetAmt*mMult; bal+=win; updBalDisp();
+  document.getElementById('msbtn').style.display='block';
+  document.getElementById('mcbtn').style.display='none';
+  sendBet('mines',mBetAmt,'win',win,mMult);
+  showRes('win',win-mBetAmt);
+}
+
+// ─── TOWER ───────────────────────────────────────────────────
+const TM=[1.5,2,3,4.5,7,11,18,30];
+let tAct=false,tRow=0,tCorr=[],tBetAmt=0;
+
+function initTG(){
+  const g=document.getElementById('tgrid'); g.innerHTML=''; tCorr=[];
+  for(let r=7;r>=0;r--){
+    const wrap=document.createElement('div'); wrap.className='trow';
+    const lbl=document.createElement('div'); lbl.className='trl'; lbl.textContent=r+1; wrap.appendChild(lbl);
+    tCorr[r]=Math.floor(Math.random()*3);
+    for(let c=0;c<3;c++){
+      const cell=document.createElement('div');
+      cell.className='tc na'; cell.dataset.r=r; cell.dataset.c=c;
+      cell.onclick=()=>tCk(r,c); wrap.appendChild(cell);
+    }
+    const ml=document.createElement('div'); ml.className='trm'; ml.id='tm'+r; ml.textContent=TM[r]+'×';
+    wrap.appendChild(ml); g.appendChild(wrap);
+  }
+}
+function towerAct(){
+  if(tAct) return;
+  const b=parseFloat(document.getElementById('tbet').value);
+  if(!b||b>bal){ notify('',t('err')); return; }
+  bal-=b; tBetAmt=b; updBalDisp(); tAct=true; tRow=0; initTG(); actTR(0);
+  document.getElementById('tsbtn').style.display='none';
+  document.getElementById('tcbtn').style.display='inline-flex';
+  document.getElementById('tlvl').textContent='0';
+  document.getElementById('twin').textContent='0';
+}
+function actTR(r){
+  document.querySelectorAll('.tc[data-r="'+r+'"]').forEach(c=>c.classList.add('ar'));
+  const ml=document.getElementById('tm'+r); if(ml) ml.classList.add('cur');
+}
+function tCk(r,c){
+  if(!tAct||r!==tRow) return;
+  document.querySelectorAll('.tc[data-r="'+r+'"]').forEach(cell=>cell.classList.remove('ar'));
+  const corr=tCorr[r];
+  document.querySelectorAll('.tc[data-r="'+r+'"]').forEach((cell,i)=>{ if(i===corr) cell.classList.add('ok'); });
+  if(c===corr){
+    tRow++;
+    document.getElementById('tlvl').textContent=tRow;
+    const win=tBetAmt*TM[r];
+    document.getElementById('twin').textContent=win.toFixed(0);
+    if(tRow>=8){
+      tAct=false; bal+=win; updBalDisp();
+      document.getElementById('tsbtn').style.display='block';
+      document.getElementById('tcbtn').style.display='none';
+      sendBet('tower',tBetAmt,'win',win,TM[r]);
+      showRes('win',win-tBetAmt);
+    } else actTR(tRow);
+  } else {
+    document.querySelectorAll('.tc[data-r="'+r+'"]').forEach((cell,i)=>{ if(i!==corr) cell.classList.add('no'); });
+    tAct=false;
+    document.getElementById('tsbtn').style.display='block';
+    document.getElementById('tcbtn').style.display='none';
+    sendBet('tower',tBetAmt,'loss',0,0);
+    setTimeout(()=>showRes('loss',tBetAmt),150);
+  }
+}
+function towerCash(){
+  if(!tAct||tRow===0){ notify('',t('pass1')); return; }
+  tAct=false;
+  const win=tBetAmt*TM[tRow-1]; bal+=win; updBalDisp();
+  document.getElementById('tsbtn').style.display='block';
+  document.getElementById('tcbtn').style.display='none';
+  sendBet('tower',tBetAmt,'win',win,TM[tRow-1]);
+  showRes('win',win-tBetAmt);
+}
+
+// ─── BALANCE GAME ────────────────────────────────────────────
+let bStr=0,bCan=true,bCorr='left',bRound=1,bBetAmt=0;
+
+function newBR(){
+  bCan=true;
+  const l=Math.floor(Math.random()*990)+10;
+  let ri; do{ ri=Math.floor(Math.random()*990)+10; }while(ri===l);
+  bCorr=l>ri?'left':'right';
+  document.getElementById('slv').textContent=l;
+  document.getElementById('srv').textContent=ri;
+  document.getElementById('bcl').textContent=l;
+  document.getElementById('bcr').textContent=ri;
+  document.getElementById('bcl').className='bc';
+  document.getElementById('bcr').className='bc';
+  document.getElementById('ssl').style.height=(28+(l/1000)*66)+'%';
+  document.getElementById('ssr').style.height=(28+(ri/1000)*66)+'%';
+  document.getElementById('bqt').textContent=t('rnd')+' '+bRound;
+}
+function bCh(side){
+  if(!bCan) return;
+  const b=parseFloat(document.getElementById('bbet').value);
+  if(!b||b>bal){ notify('',t('err')); return; }
+  bCan=false; bal-=b; bBetAmt=b; updBalDisp(); bRound++;
+  if(side===bCorr){
+    bStr++; document.getElementById('bstr').textContent=bStr;
+    document.getElementById('bc'+side[0]).className='bc ok';
+    const win=b*(1+bStr*0.15); bal+=win; updBalDisp();
+    sendBet('balance',b,'win',win,win/b);
+    showRes('win',win-b);
+  } else {
+    bStr=0; document.getElementById('bstr').textContent='0';
+    document.getElementById('bc'+side[0]).className='bc no';
+    document.getElementById('bc'+(bCorr==='left'?'l':'r')).className='bc ok';
+    sendBet('balance',b,'loss',0,0);
+    showRes('loss',b);
+  }
+  setTimeout(newBR,1000);
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+initMG(); initTG(); newBR();
+loadUser();
+startCrashRound();
+
+// восстановить язык
+if(lang!=='ru'){
+  const lb=document.querySelector(`.lb[onclick*="${lang}"]`);
+  if(lb){ document.querySelectorAll('.lb').forEach(b=>b.classList.remove('on')); lb.classList.add('on'); }
+}
+</script>
+</body>
+</html>
