@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>APEXX CASINO</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+:root{
+  --bg:#0c0c0c;--bg2:#111111;--bg3:#161616;--card:#1a1a1a;--card2:#202020;
+  --border:#2d1a1a;--border2:#3a1a1a;
+  --accent:#c8222a;--accent2:#e83030;--accent3:#ff4444;
+  --gold:#d4a839;--green:#2db870;--red:#e83030;
+  --text:#f0eded;--text2:#b09898;--text3:#5a3a3a;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 100% 50% at 50% -5%,rgba(180,20,20,.1) 0%,transparent 65%);pointer-events:none;z-index:0}
+.header{position:sticky;top:0;z-index:100;background:rgba(12,12,12,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;background:linear-gradient(135deg,#c8222a,#ff5555);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hbal{display:flex;flex-direction:column;align-items:flex-end}
+.hbal-label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3)}
+.hbal-val{font-family:'Share Tech Mono',monospace;font-size:19px;color:var(--accent3);font-weight:700}
+.nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{flex:1;min-width:70px;padding:11px 6px 9px;background:none;border:none;cursor:pointer;color:var(--text3);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;transition:color .2s;position:relative;white-space:nowrap}
+.nav-btn.active{color:var(--accent3)}
+.nav-btn.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--accent);border-radius:2px 2px 0 0}
+.page{display:none;padding:0 0 88px;position:relative;z-index:1}
+.page.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:8px 12px;overflow:hidden}
+.card-body{padding:14px 16px}
+.btn{display:block;width:100%;padding:13px 16px;border:none;border-radius:10px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .15s;outline:none}
+.btn:active{transform:scale(.97)}
+.btn-red{background:linear-gradient(135deg,#9a1010,#c8222a,#e03030);color:#fff;box-shadow:0 4px 18px rgba(180,20,20,.35)}
+.btn-red:disabled{background:#2a1a1a;color:var(--text3);box-shadow:none;cursor:default}
+.btn-green{background:linear-gradient(135deg,#1a7a40,#2db870);color:#fff}
+.btn-ghost{background:var(--bg2);border:1px solid var(--border2);color:var(--text2)}
+.btn-row{display:flex;gap:8px}
+.btn-row .btn{flex:1}
+.inp-wrap{position:relative;margin-bottom:10px}
+.inp-prefix{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:16px}
+.inp{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:17px;padding:12px 14px 12px 28px;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--accent)}
+.qbets{display:flex;gap:5px;margin-bottom:12px}
+.qbet{flex:1;padding:7px 2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
+.qbet:active{background:var(--card2);border-color:var(--accent);color:var(--accent3)}
+/* CRASH */
+.crash-wrap{margin:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.crash-screen{position:relative;height:230px;background:linear-gradient(180deg,#0e0505 0%,#0a0202 100%);overflow:hidden}
+.crash-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(180,20,20,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(180,20,20,.05) 1px,transparent 1px);background-size:40px 40px}
+#crashCanvas{width:100%;height:100%}
+.crash-mult{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-family:'Bebas Neue',sans-serif;font-size:72px;line-height:1;text-align:center;text-shadow:0 0 40px currentColor;pointer-events:none;transition:color .2s}
+.crash-status{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);white-space:nowrap}
+.rocket-wrap{position:absolute;width:44px;height:44px;transform:translate(-50%,-50%);pointer-events:none;transition:left .1s linear,bottom .1s linear}
+.rocket-img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 10px #c8222a) brightness(1.1);transform:rotate(-40deg)}
+.rocket-flame{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:12px;height:20px;background:linear-gradient(180deg,#fff 0%,#ff6666 30%,#c8222a 70%,transparent 100%);border-radius:50% 50% 0 0;opacity:.9;animation:flicker .08s infinite alternate}
+@keyframes flicker{from{transform:translateX(-50%) scaleY(1)}to{transform:translateX(-50%) scaleY(.7) scaleX(1.3)}}
+.crashed-overlay{position:absolute;inset:0;background:rgba(200,34,42,.12);display:none;animation:flashRed .4s ease-out}
+.crashed-overlay.show{display:block}
+@keyframes flashRed{from{opacity:0}to{opacity:1}}
+.crash-hist{display:flex;gap:5px;flex-wrap:wrap;padding:0 0 8px}
+.ch-item{font-family:'Share Tech Mono',monospace;font-size:11px;padding:3px 7px;border-radius:20px;border:1px solid}
+.ch-low{color:var(--red);border-color:rgba(232,48,48,.3);background:rgba(232,48,48,.07)}
+.ch-mid{color:var(--gold);border-color:rgba(212,168,57,.3);background:rgba(212,168,57,.07)}
+.ch-high{color:var(--green);border-color:rgba(45,184,112,.3);background:rgba(45,184,112,.07)}
+.crash-controls{padding:12px 14px}
+.bet-row{display:flex;gap:8px;margin-bottom:8px}
+.bet-row input{flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:16px;padding:10px 12px;outline:none;transition:border-color .2s}
+.bet-row input:focus{border-color:var(--accent)}
+.auto-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.auto-row label{font-size:11px;color:var(--text3);white-space:nowrap}
+.auto-row input{flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:13px;padding:8px 10px;outline:none}
+.countdown-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;padding:8px 12px;background:rgba(180,20,20,.08);border:1px solid rgba(180,20,20,.2);border-radius:8px}
+.countdown-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent3);line-height:1}
+.countdown-label{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
+/* BLACKJACK */
+.bj-table{background:linear-gradient(180deg,#0e0a08 0%,#0a0605 100%);border:1px solid #2d1510;border-radius:14px;margin:12px;overflow:hidden}
+.bj-area{padding:12px 14px 8px}
+.bj-area-lbl{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.25);margin-bottom:6px}
+.bj-cards{display:flex;gap:7px;flex-wrap:wrap;min-height:84px;align-items:center}
+.bj-card{width:54px;height:80px;background:#fff;border-radius:7px;display:flex;flex-direction:column;justify-content:space-between;padding:4px 5px;box-shadow:0 4px 14px rgba(0,0,0,.6);animation:deal .25s ease-out;position:relative}
+@keyframes deal{from{transform:translateY(-18px) scale(.85);opacity:0}to{transform:none;opacity:1}}
+.bj-card.back{background:linear-gradient(135deg,#6b0f0f 25%,#550d0d 25%,#550d0d 50%,#6b0f0f 50%,#6b0f0f 75%,#550d0d 75%);background-size:10px 10px}
+.bj-card.back::after{content:'';position:absolute;inset:3px;border:2px solid rgba(255,255,255,.15);border-radius:4px}
+.cr{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;line-height:1}
+.cs{font-size:20px;line-height:1;text-align:center;margin:auto}
+.cr-bot{font-size:15px;transform:rotate(180deg)}
+.red{color:#cc1111}.blk{color:#111}
+.bj-score{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:10px;padding:2px 7px;background:rgba(0,0,0,.4);border-radius:20px;color:var(--text2);margin-top:5px}
+.bj-div{height:1px;background:linear-gradient(90deg,transparent,rgba(180,20,20,.2),transparent);margin:0 14px}
+.bj-result{text-align:center;padding:12px;font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:3px;display:none}
+.bj-controls{padding:12px 14px}
+/* BALANCE */
+.bal-hero{margin:12px;background:linear-gradient(135deg,#1a1010,#141010);border:1px solid var(--border);border-radius:14px;padding:22px 18px 18px;position:relative;overflow:hidden}
+.bal-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(180,20,20,.15),transparent 70%);border-radius:50%}
+.bal-lbl{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-bottom:3px}
+.bal-val{font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:2px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:7px 12px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 13px}
+.stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:3px}
+.stat-val{font-family:'Share Tech Mono',monospace;font-size:15px;font-weight:700}
+/* PROFILE */
+.prof-header{margin:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 14px;display:flex;align-items:center;gap:12px}
+.avatar{width:52px;height:52px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--accent),#7a0a0a);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;border:2px solid var(--accent)}
+.prof-name{font-size:17px;font-weight:700}
+.prof-id{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);margin-top:2px}
+.info-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-lbl{color:var(--text2);font-size:13px}
+.info-val{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:700}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);display:none;align-items:flex-end}
+.modal-overlay.open{display:flex}
+.modal-sheet{width:100%;background:var(--bg2);border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:18px 16px 32px;animation:slideUp .3s ease-out}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.modal-handle{width:38px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 18px}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:14px}
+.check-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text2);line-height:1.8;white-space:pre-line;display:none}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:300;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:rgba(180,20,20,.55);animation:twinkle var(--d) infinite alternate}
+@keyframes twinkle{from{opacity:.08}to{opacity:.55}}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="header">
+  <div class="logo">APEXX</div>
+  <div class="hbal"><div class="hbal-label">Баланс</div><div class="hbal-val" id="hBal">$0.00</div></div>
+</div>
+<nav class="nav">
+  <button class="nav-btn active" onclick="go('crash')">🚀 Краш</button>
+  <button class="nav-btn" onclick="go('bj')">🃏 Блекджек</button>
+  <button class="nav-btn" onclick="go('balance')">💰 Баланс</button>
+  <button class="nav-btn" onclick="go('profile')">👤 Профиль</button>
+</nav>
+<!-- CRASH -->
+<div class="page active" id="page-crash">
+  <div class="crash-wrap">
+    <div class="crash-screen">
+      <div class="crash-grid"></div>
+      <canvas id="crashCanvas"></canvas>
+      <div class="rocket-wrap" id="rocket" style="display:none">
+        <img class="rocket-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Falcon9_rocket_family.png/200px-Falcon9_rocket_family.png" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 60%22><polygon points=%2220,0 5,55 20,45 35,55%22 fill=%22%23c8222a%22/></svg>'"/>
+        <div class="rocket-flame"></div>
+      </div>
+      <div class="crash-mult" id="cMult" style="color:var(--accent)">—</div>
+      <div class="crash-status" id="cStatus">Загрузка...</div>
+      <div class="crashed-overlay" id="cOverlay"></div>
+    </div>
+    <div class="crash-controls">
+      <div class="crash-hist" id="cHist"></div>
+      <div id="cCountdown" style="display:none">
+        <div class="countdown-wrap">
+          <div class="countdown-num" id="cCountNum">10</div>
+          <div class="countdown-label">сек. до старта</div>
+        </div>
+      </div>
+      <div class="bet-row"><input type="number" id="cBetInp" placeholder="Ставка" value="5" min="1"/></div>
+      <div class="auto-row"><label>Авто-вывод:</label><input type="number" id="cAuto" placeholder="2.00" step="0.1" min="1.1"/></div>
+      <div class="btn-row">
+        <button class="btn btn-red" id="cBetBtn" onclick="cBet()">Поставить</button>
+        <button class="btn btn-green" id="cCashBtn" onclick="cCash()" style="display:none">💰 Забрать</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- BLACKJACK -->
+<div class="page" id="page-bj">
+  <div class="bj-table">
+    <div class="bj-area"><div class="bj-area-lbl">🎩 Дилер</div><div class="bj-cards" id="bjDealer"></div><div class="bj-score" id="bjDScore">?</div></div>
+    <div class="bj-div"></div>
+    <div class="bj-area"><div class="bj-area-lbl">👤 Вы</div><div class="bj-cards" id="bjPlayer"></div><div class="bj-score" id="bjPScore">0</div></div>
+  </div>
+  <div class="bj-result" id="bjRes"></div>
+  <div class="card"><div class="card-body">
+    <div class="inp-wrap"><span class="inp-prefix">$</span><input class="inp" type="number" id="bjBetInp" value="10" min="1"/></div>
+    <div class="qbets">
+      <div class="qbet" onclick="bjSetBet(5)">$5</div>
+      <div class="qbet" onclick="bjSetBet(10)">$10</div>
+      <div class="qbet" onclick="bjSetBet(25)">$25</div>
+      <div class="qbet" onclick="bjSetBet(50)">$50</div>
+    </div>
+    <div id="bjStart"><button class="btn btn-red" onclick="bjDeal()">🃏 Сдать карты</button></div>
+    <div id="bjGame" style="display:none"><div class="btn-row">
+      <button class="btn btn-red" onclick="bjHit()">➕ Ещё</button>
+      <button class="btn btn-ghost" onclick="bjStand()">✋ Стоп</button>
+      <button class="btn btn-ghost" id="bjDblBtn" onclick="bjDouble()" style="font-size:13px">✖️2</button>
+    </div></div>
+  </div></div>
+</div>
+<!-- BALANCE -->
+<div class="page" id="page-balance">
+  <div class="bal-hero">
+    <div class="bal-lbl">Текущий баланс</div>
+    <div class="bal-val" id="balVal">$0.00</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:4px">US Dollar</div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-lbl">Выиграно</div><div class="stat-val" style="color:var(--green)" id="sWon">$0.00</div></div>
+    <div class="stat-card"><div class="stat-lbl">Проиграно</div><div class="stat-val" style="color:var(--red)" id="sLost">$0.00</div></div>
+    <div class="stat-card"><div class="stat-lbl">Игр сыграно</div><div class="stat-val" id="sGames">0</div></div>
+    <div class="stat-card"><div class="stat-lbl">Реф. доход</div><div class="stat-val" style="color:var(--gold)" id="sRef">$0.00</div></div>
+  </div>
+  <div class="card" style="margin-top:6px"><div class="card-body">
+    <div class="inp-wrap"><span class="inp-prefix">$</span><input class="inp" type="number" id="wAmt" placeholder="Сумма вывода" min="5"/></div>
+    <div class="qbets">
+      <div class="qbet" onclick="setW(10)">$10</div>
+      <div class="qbet" onclick="setW(25)">$25</div>
+      <div class="qbet" onclick="setW(50)">$50</div>
+      <div class="qbet" onclick="setW(100)">$100</div>
+    </div>
+    <button class="btn btn-ghost" onclick="openW()">💸 Вывод средств</button>
+  </div></div>
+</div>
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div class="prof-header">
+    <div class="avatar" id="profAvatar">A</div>
+    <div><div class="prof-name" id="profName">—</div><div class="prof-id" id="profId">ID: —</div></div>
+  </div>
+  <div class="card">
+    <div class="info-row"><span class="info-lbl">💰 Баланс</span><span class="info-val" id="pBal" style="color:var(--accent3)">$0.00</span></div>
+    <div class="info-row"><span class="info-lbl">📈 Выиграно</span><span class="info-val" style="color:var(--green)" id="pWon">$0.00</span></div>
+    <div class="info-row"><span class="info-lbl">📉 Проиграно</span><span class="info-val" style="color:var(--red)" id="pLost">$0.00</span></div>
+    <div class="info-row"><span class="info-lbl">🎮 Игр сыграно</span><span class="info-val" id="pGames">0</span></div>
+    <div class="info-row"><span class="info-lbl">👥 Рефералов</span><span class="info-val" id="pRefs">0</span></div>
+    <div class="info-row"><span class="info-lbl">💸 Реф. доход</span><span class="info-val" style="color:var(--gold)" id="pRef">$0.00</span></div>
+  </div>
+  <div class="card" style="margin-top:4px"><div class="card-body">
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:7px">Реферальная ссылка</div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);word-break:break-all" id="refLink">—</div>
+    <button class="btn btn-ghost" style="margin-top:8px;font-size:12px" onclick="copyRef()">📋 Скопировать</button>
+  </div></div>
+</div>
+<!-- WITHDRAW MODAL -->
+<div class="modal-overlay" id="wModal" onclick="closeW(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💸 Вывод средств</div>
+    <div style="color:var(--text2);font-size:13px;margin-bottom:14px">Минимум $5 · Обработка до 24ч</div>
+    <div class="inp-wrap" style="margin-bottom:10px"><span class="inp-prefix">$</span><input class="inp" type="number" id="wModalAmt" placeholder="0.00" min="5"/></div>
+    <button class="btn btn-red" onclick="confirmW()">Создать заявку</button>
+    <div class="check-box" id="wCheck"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const API_URL=''; // вставь https://xxx.lhr.life если есть сервер
+const st={balance:100,won:0,lost:0,games:0,refEarned:0,refs:0,userId:0,username:'player',firstName:'Игрок',initData:''};
+const tg=window.Telegram?.WebApp;
+if(tg){
+  tg.expand();
+  tg.setHeaderColor&&tg.setHeaderColor('#0c0c0c');
+  tg.setBackgroundColor&&tg.setBackgroundColor('#0c0c0c');
+  const u=tg.initDataUnsafe?.user;
+  if(u){st.userId=u.id;st.username=u.username||'player';st.firstName=u.first_name||'Игрок'}
+  st.initData=tg.initData||'';
+}
+function apiH(){const h={'Content-Type':'application/json'};if(st.initData)h['X-Telegram-Init-Data']=st.initData;if(st.userId)h['X-User-Id']=String(st.userId);return h}
+function lsLoad(){try{const s=localStorage.getItem('apexx');if(s)Object.assign(st,JSON.parse(s))}catch(e){}}
+function lsSave(){try{localStorage.setItem('apexx',JSON.stringify(st))}catch(e){}}
+async function loadServer(){
+  if(!API_URL&&!st.userId)return;
+  try{
+    const r=await fetch((API_URL||'')+'/api/user',{headers:apiH()});
+    if(!r.ok){await initServer();return}
+    const d=await r.json();
+    st.balance=d.balance;st.won=d.total_won;st.lost=d.total_lost;st.games=d.games_played;st.refEarned=d.ref_earned;st.refs=d.refs_count;st.firstName=d.first_name||st.firstName;st.username=d.username||st.username;
+    lsSave();ui();
+  }catch(e){}
+}
+async function initServer(){
+  try{await fetch((API_URL||'')+'/api/user/init',{method:'POST',headers:apiH(),body:JSON.stringify({user_id:st.userId,username:st.username,first_name:st.firstName})})}catch(e){}
+  await loadServer();
+}
+async function serverBet(game,bet,mult,win,result){
+  if(!API_URL&&!st.userId){
+    if(result==='win'){st.balance+=win;st.won=+(st.won+win-bet).toFixed(2)}else st.lost=+(st.lost+bet).toFixed(2);
+    st.games++;lsSave();ui();return true;
+  }
+  try{
+    const r=await fetch((API_URL||'')+'/api/bet',{method:'POST',headers:apiH(),body:JSON.stringify({game,bet_amount:bet,multiplier:mult,win_amount:win,result})});
+    const d=await r.json();
+    if(d.ok){st.balance=d.balance;if(result==='win'){st.won=+(st.won+win-bet).toFixed(2)}else st.lost=+(st.lost+bet).toFixed(2);st.games++;lsSave();ui();return true}
+    return false;
+  }catch(e){return false}
+}
+const $=id=>document.getElementById(id);
+const fmt=n=>'$'+parseFloat(n).toFixed(2);
+function ui(){
+  $('hBal').textContent=fmt(st.balance);$('balVal').textContent=fmt(st.balance);
+  $('sWon').textContent=fmt(st.won);$('sLost').textContent=fmt(st.lost);$('sGames').textContent=st.games;$('sRef').textContent=fmt(st.refEarned);
+  $('pBal').textContent=fmt(st.balance);$('pWon').textContent=fmt(st.won);$('pLost').textContent=fmt(st.lost);$('pGames').textContent=st.games;$('pRefs').textContent=st.refs;$('pRef').textContent=fmt(st.refEarned);
+  const n=st.firstName||'Игрок';$('profName').textContent=n;$('profAvatar').textContent=n[0].toUpperCase();$('profId').textContent='ID: '+(st.userId||'—');
+  $('refLink').textContent=st.userId?'https://t.me/apexx_casino_bot?start=ref'+st.userId:'—';
+}
+function toast(msg,col){const el=$('toast');el.textContent=msg;el.style.borderColor=col||'var(--border2)';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2600)}
+function go(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  $('page-'+p).classList.add('active');
+  const idx=['crash','bj','balance','profile'].indexOf(p);
+  if(idx>=0)document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  ui();
+}
+// stars
+(function(){const c=$('stars');for(let i=0;i<55;i++){const s=document.createElement('div');s.className='star';const z=Math.random()*2+.5;s.style.cssText='width:'+z+'px;height:'+z+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;--d:'+(Math.random()*3+2).toFixed(1)+'s';c.appendChild(s)}})();
+// CRASH
+const canvas=$('crashCanvas');const ctx=canvas.getContext('2d');
+let cState='betting',cMult=1,cBetAmt=0,cBetActive=false,cPendingBet=0,cCrashAt=1,cPoints=[],cStartTime=0,cTickId=null,cCountId=null,cHistory=[];
+function resizeCanvas(){canvas.width=canvas.parentElement.clientWidth;canvas.height=canvas.parentElement.clientHeight}
+window.addEventListener('resize',resizeCanvas);resizeCanvas();
+function genCrash(){const r=Math.random();if(r<.32)return 1+Math.random()*.5;if(r<.62)return 1.5+Math.random()*1.5;if(r<.82)return 3+Math.random()*4;if(r<.95)return 7+Math.random()*13;return 20+Math.random()*80}
+function drawCrash(){
+  const W=canvas.width,H=canvas.height;ctx.clearRect(0,0,W,H);if(cPoints.length<2)return;
+  const maxT=cPoints[cPoints.length-1].t,maxM=Math.max(...cPoints.map(p=>p.m),2);
+  const pL=28,pB=18,pR=16,pT=16,gW=W-pL-pR,gH=H-pB-pT;
+  const tc=(t,m)=>({x:pL+t/maxT*gW,y:H-pB-(m-1)/(maxM-1)*gH});
+  ctx.beginPath();ctx.moveTo(pL,H-pB);
+  for(const p of cPoints){const c=tc(p.t,p.m);ctx.lineTo(c.x,c.y)}
+  ctx.lineTo(tc(cPoints[cPoints.length-1].t,1).x,H-pB);ctx.closePath();
+  const gr=ctx.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,cState==='crashed'?'rgba(220,30,30,.28)':'rgba(160,15,15,.2)');gr.addColorStop(1,'rgba(160,15,15,0)');
+  ctx.fillStyle=gr;ctx.fill();
+  ctx.beginPath();for(let i=0;i<cPoints.length;i++){const c=tc(cPoints[i].t,cPoints[i].m);i===0?ctx.moveTo(c.x,c.y):ctx.lineTo(c.x,c.y)}
+  ctx.strokeStyle=cState==='crashed'?'#e83030':'#c8222a';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
+  if(cState==='running'&&cPoints.length>0){
+    const last=tc(cPoints[cPoints.length-1].t,cPoints[cPoints.length-1].m);
+    const rk=$('rocket');const rect=canvas.getBoundingClientRect();
+    rk.style.left=(last.x*rect.width/W)+'px';rk.style.bottom=((H-last.y)*rect.height/H-8)+'px';
+  }
+}
+function startBetting(){
+  cState='betting';cPendingBet=0;cPoints=[];cBetActive=false;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  $('cOverlay').classList.remove('show');$('rocket').style.display='none';
+  $('cMult').textContent='—';$('cMult').style.color='var(--text3)';
+  $('cBetBtn').disabled=false;$('cBetBtn').textContent='Поставить';
+  $('cBetBtn').style.display='block';$('cCashBtn').style.display='none';
+  $('cCountdown').style.display='block';
+  let sec=10;$('cCountNum').textContent=sec;$('cStatus').textContent='Приём ставок';
+  clearInterval(cCountId);
+  cCountId=setInterval(()=>{
+    sec--;$('cCountNum').textContent=sec;
+    if(sec<=0){
+      clearInterval(cCountId);$('cCountdown').style.display='none';
+      $('cBetBtn').disabled=true;$('cBetBtn').textContent='⏳ Раунд идёт';
+      if(cPendingBet>0){
+        cBetAmt=cPendingBet;cBetActive=true;cPendingBet=0;
+        st.balance-=cBetAmt;lsSave();ui();
+        $('cCashBtn').style.display='block';$('cBetBtn').style.display='none';
+      }
+      setTimeout(startRunning,500);
+    }
+  },1000);
+}
+function startRunning(){
+  cState='running';cMult=1;cPoints=[{t:0,m:1}];cStartTime=Date.now();cCrashAt=genCrash();
+  $('cMult').style.color='var(--accent)';$('cStatus').textContent='🚀 Летим!';
+  $('cOverlay').classList.remove('show');$('rocket').style.display='block';
+  clearInterval(cTickId);
+  cTickId=setInterval(()=>{
+    const el=(Date.now()-cStartTime)/1000;
+    cMult=Math.round(Math.pow(Math.E,el*.12)*100)/100;
+    cPoints.push({t:el,m:cMult});
+    $('cMult').textContent=cMult.toFixed(2)+'x';
+    $('cMult').style.color=cMult<2?'var(--accent)':cMult<5?'#d4a839':'var(--green)';
+    const ac=parseFloat($('cAuto').value);
+    if(cBetActive&&!isNaN(ac)&&ac>1&&cMult>=ac)cCash();
+    drawCrash();
+    if(cMult>=cCrashAt)doCrash();
+  },80);
+}
+function doCrash(){
+  clearInterval(cTickId);cState='crashed';
+  $('cMult').style.color='var(--red)';$('cStatus').textContent='Разбился на '+cMult.toFixed(2)+'x 💥';
+  $('cOverlay').classList.add('show');$('rocket').style.display='none';
+  $('cCashBtn').style.display='none';$('cBetBtn').style.display='block';
+  $('cBetBtn').disabled=false;$('cBetBtn').textContent='Поставить';
+  if(cBetActive){cBetActive=false;serverBet('crash',cBetAmt,0,0,'lose');toast('Разбился '+cMult.toFixed(2)+'x — потеряно '+fmt(cBetAmt),'var(--red)')}
+  const cls=cMult<1.5?'ch-low':cMult<5?'ch-mid':'ch-high';
+  cHistory.unshift({m:cMult.toFixed(2),cls});if(cHistory.length>10)cHistory.pop();
+  $('cHist').innerHTML=cHistory.map(h=>'<span class="ch-item '+h.cls+'">'+h.m+'x</span>').join('');
+  drawCrash();setTimeout(()=>startBetting(),3000);
+}
+function cBet(){
+  const bet=parseFloat($('cBetInp').value);
+  if(isNaN(bet)||bet<1){toast('Минимум $1','var(--red)');return}
+  if(bet>st.balance){toast('Недостаточно средств','var(--red)');return}
+  if(cState!=='betting'){toast('Ставки только в фазе приёма','var(--red)');return}
+  if(cPendingBet>0){toast('Ставка уже в очереди','var(--text3)');return}
+  cPendingBet=bet;$('cBetBtn').textContent='✅ '+fmt(bet);$('cBetBtn').disabled=true;
+  toast('Ставка '+fmt(bet)+' принята!','var(--accent)');
+}
+function cCash(){
+  if(!cBetActive||cState!=='running')return;
+  const win=Math.round(cBetAmt*cMult*100)/100;cBetActive=false;
+  $('cCashBtn').style.display='none';$('cBetBtn').style.display='block';
+  $('cBetBtn').disabled=false;$('cBetBtn').textContent='Поставить';
+  serverBet('crash',cBetAmt,cMult,win,'win');
+  toast('Забрал '+fmt(win)+' (x'+cMult.toFixed(2)+') 🎉','var(--green)');
+}
+// BLACKJACK
+const SUITS=['♠','♥','♦','♣'],RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+let bjDeck=[],bjP=[],bjD=[],bjBet=0,bjRunning=false,bjDoubled=false;
+function mkDeck(){const d=[];for(const s of SUITS)for(const r of RANKS)d.push({r,s});for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}return d}
+function cv(c){if(['J','Q','K'].includes(c.r))return 10;if(c.r==='A')return 11;return+c.r}
+function score(h){let s=0,a=0;for(const c of h){s+=cv(c);if(c.r==='A')a++}while(s>21&&a){s-=10;a--}return s}
+function isRed(s){return s==='♥'||s==='♦'}
+function mkCard(c,hidden){
+  const el=document.createElement('div');el.className='bj-card'+(hidden?' back':'');
+  if(!hidden){const cl=isRed(c.s)?'red':'blk';el.innerHTML='<div class="cr '+cl+'">'+c.r+'</div><div class="cs '+cl+'">'+c.s+'</div><div class="cr cr-bot '+cl+'">'+c.r+'</div>'}
+  return el;
+}
+function renderBJ(hideD){
+  const dc=$('bjDealer'),pc=$('bjPlayer');dc.innerHTML='';pc.innerHTML='';
+  bjD.forEach((c,i)=>dc.appendChild(mkCard(c,hideD&&i===1)));bjP.forEach(c=>pc.appendChild(mkCard(c,false)));
+  $('bjPScore').textContent='Очки: '+score(bjP);$('bjDScore').textContent=hideD?'?':'Очки: '+score(bjD);
+}
+function bjSetBet(n){$('bjBetInp').value=n}
+function bjDeal(){
+  const bet=parseFloat($('bjBetInp').value);
+  if(isNaN(bet)||bet<1){toast('Минимум $1','var(--red)');return}
+  if(bet>st.balance){toast('Недостаточно средств','var(--red)');return}
+  bjBet=bet;bjDoubled=false;bjRunning=true;bjDeck=mkDeck();bjP=[bjDeck.pop(),bjDeck.pop()];bjD=[bjDeck.pop(),bjDeck.pop()];
+  $('bjRes').style.display='none';$('bjStart').style.display='none';$('bjGame').style.display='block';$('bjDblBtn').disabled=false;
+  renderBJ(true);if(score(bjP)===21)bjFinish('natural');
+}
+function bjHit(){if(!bjRunning)return;bjP.push(bjDeck.pop());renderBJ(true);if(score(bjP)>21)bjFinish('bust')}
+function bjStand(){
+  if(!bjRunning)return;while(score(bjD)<17)bjD.push(bjDeck.pop());
+  const ps=score(bjP),ds=score(bjD);
+  if(ds>21||ps>ds)bjFinish('win');else if(ps===ds)bjFinish('draw');else bjFinish('lose');
+}
+function bjDouble(){
+  if(!bjRunning||bjDoubled)return;if(bjBet>st.balance){toast('Недостаточно средств','var(--red)');return}
+  bjBet*=2;bjDoubled=true;$('bjDblBtn').disabled=true;bjP.push(bjDeck.pop());renderBJ(true);
+  if(score(bjP)>21)bjFinish('bust');else bjStand();
+}
+function bjFinish(res){
+  bjRunning=false;renderBJ(false);$('bjGame').style.display='none';$('bjStart').style.display='block';
+  const rEl=$('bjRes');rEl.style.display='block';
+  if(res==='natural'){const win=Math.round(bjBet*2.5*100)/100;serverBet('blackjack',bjBet,2.5,win,'win');rEl.textContent='🃏 БЛЕКДЖЕК! +'+fmt(win);rEl.style.color='var(--gold)';toast('Блекджек! +'+fmt(win),'var(--gold)')}
+  else if(res==='win'){const win=Math.round(bjBet*2*100)/100;serverBet('blackjack',bjBet,2,win,'win');rEl.textContent='🏆 ПОБЕДА +'+fmt(bjBet);rEl.style.color='var(--green)';toast('Победа! +'+fmt(bjBet),'var(--green)')}
+  else if(res==='draw'){serverBet('blackjack',bjBet,1,bjBet,'win');rEl.textContent='🤝 НИЧЬЯ';rEl.style.color='var(--gold)';toast('Ничья','var(--gold)')}
+  else if(res==='bust'){serverBet('blackjack',bjBet,0,0,'lose');rEl.textContent='💥 ПЕРЕБОР −'+fmt(bjBet);rEl.style.color='var(--red)';toast('Перебор!','var(--red)')}
+  else{serverBet('blackjack',bjBet,0,0,'lose');rEl.textContent='💀 ПОРАЖЕНИЕ −'+fmt(bjBet);rEl.style.color='var(--red)';toast('Поражение','var(--red)')}
+}
+// WITHDRAW
+function setW(n){$('wAmt').value=n}
+function openW(){const a=parseFloat($('wAmt').value);if(!isNaN(a))$('wModalAmt').value=a;$('wCheck').style.display='none';$('wModal').classList.add('open')}
+function closeW(e){if(e.target===$('wModal'))$('wModal').classList.remove('open')}
+async function confirmW(){
+  const amt=parseFloat($('wModalAmt').value);
+  if(isNaN(amt)||amt<5){toast('Минимум $5','var(--red)');return}
+  if(amt>st.balance){toast('Недостаточно средств','var(--red)');return}
+  if(API_URL){
+    try{const r=await fetch(API_URL+'/api/withdraw',{method:'POST',headers:apiH(),body:JSON.stringify({amount:amt})});const d=await r.json();if(!d.ok){toast(d.error||'Ошибка','var(--red)');return}st.balance=d.balance;lsSave();ui();$('wCheck').textContent=d.check_text;$('wCheck').style.display='block'}
+    catch(e){toast('Нет связи с сервером','var(--red)');return}
+  }else{
+    st.balance-=amt;lsSave();ui();
+    const now=new Date();
+    $('wCheck').textContent='🎰 APEXX CASINO\n\n💰 Сумма: '+fmt(amt)+'\n👤 ID: '+(st.userId||'—')+'\n📅 '+now.toLocaleDateString('ru-RU')+' '+now.toLocaleTimeString('ru-RU')+'\n\nЗабирай профит. Удачи в следующий раз! 🔥';
+    $('wCheck').style.display='block';
+  }
+  setTimeout(()=>{$('wModal').classList.remove('open');toast('Заявка создана! До 24ч','var(--accent)')},2200);
+}
+function copyRef(){const l=$('refLink').textContent;if(l==='—')return;navigator.clipboard.writeText(l).then(()=>toast('Ссылка скопирована!','var(--accent)'))}
+// INIT
+lsLoad();ui();
+setInterval(loadServer,15000);
+loadServer();
+setTimeout(startBetting,800);
+</script>
+</body>
+</html>
